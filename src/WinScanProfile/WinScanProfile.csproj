@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyName>WinScanProfile</AssemblyName>
+        <RootNamespace>WinScanProfile</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ApplicationIcon>Properties/App.ico</ApplicationIcon>
+        <ApplicationManifest>Properties/App.manifest</ApplicationManifest>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Product>WinScan Profile</Product>
+        <Description>Changing scanner profiles.</Description>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    </PropertyGroup>
+
+</Project>
