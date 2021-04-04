@@ -8,6 +8,7 @@ using System.Text;
 using System.Xml;
 
 namespace WinScanProfile.Document {
+    [DebuggerDisplay("{ProfileName}")]
     internal class Profile {
 
         internal Profile(string fileName) {
@@ -19,11 +20,11 @@ namespace WinScanProfile.Document {
                         case "ScanProfile": break;  // ignore
 
                         case "ProfileGUID":
-                            ProfileGuid = xml.ReadElementContentAsString();
+                            ProfileGuid = xml.ReadString();
                             break;
 
                         case "DeviceID": {
-                                DeviceId = xml.ReadElementContentAsString();
+                                DeviceId = xml.ReadString();
                                 using var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default);
                                 using var key = baseKey.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\" + DeviceId);
                                 if (key != null) {
@@ -33,11 +34,11 @@ namespace WinScanProfile.Document {
                             break;
 
                         case "ProfileName":
-                            ProfileName = xml.ReadElementContentAsString();
+                            ProfileName = xml.ReadString();
                             break;
 
                         case "WiaItem":
-                            WiaItem = xml.ReadElementContentAsString();
+                            WiaItem = xml.ReadString();
                             break;
 
                         case "Default":
@@ -51,7 +52,7 @@ namespace WinScanProfile.Document {
                             var attrType = xml.GetAttribute("type");
                             if (int.TryParse(attrId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var propId)
                              && int.TryParse(attrType, NumberStyles.Integer, CultureInfo.InvariantCulture, out var propType)) {
-                                Properties.Add(new Property(propId, propType, xml.ReadElementContentAsString()));
+                                Properties.Add(new Property(propId, propType, xml.ReadString()));
                             }
                             break;
 
@@ -69,7 +70,7 @@ namespace WinScanProfile.Document {
         private readonly Encoding Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
         public void Save() {
-            using var xml = new XmlTextWriter(FileName, Encoding);
+            using var xml = new XmlTextWriter(File.Create(FileName), Encoding);
 
             xml.WriteStartElement("ScanProfile");
 

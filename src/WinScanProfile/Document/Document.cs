@@ -25,10 +25,5 @@ namespace WinScanProfile.Document {
             get { return InternalProfiles.AsReadOnly(); }
         }
 
-        internal void Save() {
-            foreach (var profile in Profiles) {
-                profile.Save();
-            }
-        }
     }
 }

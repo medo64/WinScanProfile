@@ -58,17 +58,16 @@ namespace WinScanProfile {
         private void lsvProfiles_DoubleClick(object sender, EventArgs e) {
             var selectedItem = lsvProfiles.FocusedItem;
             if (selectedItem.Tag is Document.Profile profile) {
-                if (!profile.IsDefault) {
-                    foreach (var otherProfile in Document.Profiles) {
-                        if (profile == otherProfile) {
-                            profile.IsDefault = true;
-                        } else {
-                            otherProfile.IsDefault = false;
-                        }
+                foreach (var otherProfile in Document.Profiles) {
+                    if (profile.Equals(otherProfile)) {
+                        profile.IsDefault = true;
+                        profile.Save();
+                    } else if (otherProfile.IsDefault) {
+                        otherProfile.IsDefault = false;
+                        otherProfile.Save();
                     }
                 }
             }
-            Document.Save();
 
             RefreshItems();
         }
@@ -78,7 +77,7 @@ namespace WinScanProfile {
                 var item = lsvProfiles.Items[e.Item];
                 if (item.Tag is Document.Profile profile) {
                     profile.ProfileName = e.Label;
-                    Document.Save();
+                    profile.Save();
                 }
             } else {
                 e.CancelEdit = true;
