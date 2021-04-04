@@ -4,24 +4,22 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace WinScanProfile.Document {
     internal class Profile {
 
         internal Profile(string fileName) {
+            FileName = fileName;
             using var xml = new XmlTextReader(File.OpenRead(fileName));
             while (xml.Read()) {  // simple reading is good enough for this
                 if (xml.NodeType == XmlNodeType.Element) {
                     switch (xml.Name) {
                         case "ScanProfile": break;  // ignore
 
-                        case "ProfileGUID": {
-                                var content = xml.ReadElementContentAsString();
-                                if (Guid.TryParse(content, out var result)) {
-                                    ProfileGuid = result;
-                                }
-                            }
+                        case "ProfileGUID":
+                            ProfileGuid = xml.ReadElementContentAsString();
                             break;
 
                         case "DeviceID": {
@@ -38,12 +36,8 @@ namespace WinScanProfile.Document {
                             ProfileName = xml.ReadElementContentAsString();
                             break;
 
-                        case "WiaItem": {
-                                var content = xml.ReadElementContentAsString();
-                                if (Guid.TryParse(content, out var result)) {
-                                    WiaItem = result;
-                                }
-                            }
+                        case "WiaItem":
+                            WiaItem = xml.ReadElementContentAsString();
                             break;
 
                         case "Default":
@@ -72,12 +66,39 @@ namespace WinScanProfile.Document {
             if (DeviceFriendlyName == null) { DeviceFriendlyName = "Unknown"; }
         }
 
+        private readonly Encoding Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
-        public Guid? ProfileGuid { get; init; }
+        public void Save() {
+            using var xml = new XmlTextWriter(FileName, Encoding);
+
+            xml.WriteStartElement("ScanProfile");
+
+            if (ProfileGuid != null) { xml.WriteElementString("ProfileGUID", ProfileGuid); }
+            if (DeviceId != null) { xml.WriteElementString("DeviceID", DeviceId); }
+            if (ProfileName != null) { xml.WriteElementString("ProfileName", ProfileName); }
+            if (WiaItem != null) { xml.WriteElementString("WiaItem", WiaItem); }
+            if (IsDefault) { xml.WriteElementString("Default", null); }
+
+            xml.WriteStartElement("Properties");
+            foreach (var property in Properties) {
+                xml.WriteStartElement("Property");
+                xml.WriteAttributeString("id", property.Id.ToString(CultureInfo.InvariantCulture));
+                xml.WriteAttributeString("type", property.Type.ToString(CultureInfo.InvariantCulture));
+                xml.WriteString(property.Value);
+                xml.WriteEndElement();  // Property
+            }
+            xml.WriteEndElement();  // Properties
+
+            xml.WriteEndElement();  // ScanProfile
+        }
+
+
+        public string FileName { get; init; }
+        public string? ProfileGuid { get; init; }
         public string? DeviceId { get; init; }
-        public string DeviceFriendlyName { get; init; }
+        public string? DeviceFriendlyName { get; init; }
         public string? ProfileName { get; set; }
-        public Guid? WiaItem { get; init; }
+        public string? WiaItem { get; init; }
         public bool IsDefault { get; set; }
 
         public List<Property> Properties { get; } = new();

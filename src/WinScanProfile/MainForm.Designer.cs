@@ -1,4 +1,4 @@
-﻿namespace WinScanProfile
+namespace WinScanProfile
 {
     partial class MainForm
     {
@@ -50,6 +50,7 @@
             this.lsvProfiles.FullRowSelect = true;
             this.lsvProfiles.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lsvProfiles.HideSelection = false;
+            this.lsvProfiles.LabelEdit = true;
             this.lsvProfiles.Location = new System.Drawing.Point(0, 25);
             this.lsvProfiles.MultiSelect = false;
             this.lsvProfiles.Name = "lsvProfiles";
@@ -57,6 +58,9 @@
             this.lsvProfiles.TabIndex = 1;
             this.lsvProfiles.UseCompatibleStateImageBehavior = false;
             this.lsvProfiles.View = System.Windows.Forms.View.Details;
+            this.lsvProfiles.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.lsvProfiles_AfterLabelEdit);
+            this.lsvProfiles.DoubleClick += new System.EventHandler(this.lsvProfiles_DoubleClick);
+            this.lsvProfiles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lsvProfiles_KeyDown);
             // 
             // lsvProfiles_colProfile
             // 
