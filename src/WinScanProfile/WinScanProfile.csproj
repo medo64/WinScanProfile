@@ -28,4 +28,13 @@
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
     </PropertyGroup>
 
+
+    <ItemGroup>
+      <Folder Include="Medo\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\lib\Medo\src\Medo.WindowsForms\WaitCursor.cs" Link="Medo\WaitCursor.cs" />
+      </ItemGroup>
+
 </Project>

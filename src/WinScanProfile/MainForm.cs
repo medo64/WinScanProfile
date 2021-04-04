@@ -23,6 +23,8 @@ namespace WinScanProfile {
 
 
         public void RefreshItems() {
+            using var _ = new Medo.Windows.Forms.WaitCursor(this);
+
             var document = new Document.Document();
 
             var dict = new Dictionary<string, ListViewGroup>();
