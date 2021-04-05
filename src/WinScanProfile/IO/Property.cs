@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace WinScanProfile.IO {
@@ -8,6 +9,7 @@ namespace WinScanProfile.IO {
             Type = type;
             Value = value;
             Name = id.ToString(CultureInfo.InvariantCulture);
+            Values = new List<KeyValuePair<string, string>>().AsReadOnly();
         }
 
         public int Id { get; init; }
@@ -15,7 +17,7 @@ namespace WinScanProfile.IO {
         public string? Value { get; set; }
 
         public string Name { get; init; }
-
+        public IReadOnlyList<KeyValuePair<string, string>> Values { get; init; }
 
         public static Property FromData(int id, int type, string value) {
             return id switch {

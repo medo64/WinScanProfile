@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Windows.Forms;
 using WinScanProfile.IO;
 
@@ -18,24 +19,41 @@ namespace WinScanProfile {
 
             var top = ClientRectangle.Top + marginVertical;
             foreach (var property in profile.Properties) {
-                var txt = new TextBox() {
-                    Tag = property,
-                    Text = property.Value ?? "",
-                    Width = ClientRectangle.Width * 2 / 3,
-                };
-                txt.Top = top;
-                txt.Left = ClientRectangle.Right - txt.Width - marginHorizontal;
+                Control ctl;
+                if (property.Values.Count > 0) {
+                    var text = property.Value ?? string.Empty;
+                    foreach (var value in property.Values) {
+                        if (string.Equals(value.Key, text, StringComparison.OrdinalIgnoreCase)) { text = value.Value; }
+                    }
+                    var cmb = new ComboBox() {
+                        Tag = property,
+                        Text = text,
+                        Width = ClientRectangle.Width * 2 / 3,
+                    };
+                    foreach (var value in property.Values) {
+                        cmb.Items.Add(value.Value);
+                    }
+                    ctl = cmb;
+                } else {
+                    ctl = new TextBox() {
+                        Tag = property,
+                        Text = property.Value ?? "",
+                        Width = ClientRectangle.Width * 2 / 3,
+                    };
+                }
+                ctl.Top = top;
+                ctl.Left = ClientRectangle.Right - ctl.Width - marginHorizontal;
 
                 var lbl = new Label() {
                     AutoSize = true,
                     Text = property.Name + ":",
                 };
-                lbl.Top = top + (txt.Height - lbl.Height) / 2;
-                lbl.Left = ClientRectangle.Left + txt.Margin.Left;
+                lbl.Top = top + (ctl.Height - lbl.Height) / 2;
+                lbl.Left = ClientRectangle.Left + ctl.Margin.Left;
 
                 Controls.Add(lbl);
-                Controls.Add(txt);
-                top = txt.Bottom + txt.Margin.Top + txt.Margin.Bottom;
+                Controls.Add(ctl);
+                top = ctl.Bottom + ctl.Margin.Top + ctl.Margin.Bottom;
             }
 
             var heightDiff = Height - ClientRectangle.Height;
@@ -58,6 +76,9 @@ namespace WinScanProfile {
                 if (control.Tag is Property property) {
                     var enteredValue = control.Text;
                     if (!(property.Value ?? "").Equals(enteredValue)) {
+                        foreach (var value in property.Values) {
+                            if (string.Equals(value.Value, enteredValue, StringComparison.OrdinalIgnoreCase)) { enteredValue = value.Key; }
+                        }
                         property.Value = enteredValue;
                         anyChanges |= true;
                     }

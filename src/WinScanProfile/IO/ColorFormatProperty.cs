@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace WinScanProfile.IO {
     internal sealed class ColorFormatProperty : Property {
@@ -6,9 +7,11 @@ namespace WinScanProfile.IO {
         public ColorFormatProperty(int id, int type, string value)
             : base(id, type, value) {
             Name = "Color format";
-            // 0: Black and White
-            // 2: Grayscale
-            // 3: Color
+            Values = new List<KeyValuePair<string, string>>() {
+                new KeyValuePair<string,string>("0", "Black and white"),
+                new KeyValuePair<string,string>("2", "Grayscale"),
+                new KeyValuePair<string,string>("3", "Color"),
+            }.AsReadOnly();
         }
 
     }

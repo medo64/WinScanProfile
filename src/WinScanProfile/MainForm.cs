@@ -66,6 +66,7 @@ namespace WinScanProfile {
             if (selectedItem.Tag is Profile profile) {
                 using var frm = new ProfileForm(Document, profile);
                 frm.ShowDialog(this);
+                RefreshItems();
             }
         }
 
@@ -73,7 +74,6 @@ namespace WinScanProfile {
             var selectedItem = lsvProfiles.FocusedItem;
             if (selectedItem.Tag is Profile profile) {
                 SetProfileAsDouble(profile);
-                RefreshItems();
             }
         }
 
@@ -112,6 +112,7 @@ namespace WinScanProfile {
 
         private void SetProfileAsDouble(Profile profile) {
             Document.SetDefaultProfile(profile);
+            RefreshItems();
         }
 
     }
