@@ -27,7 +27,8 @@ namespace WinScanProfile {
                 txt.Left = ClientRectangle.Right - txt.Width - marginHorizontal;
 
                 var lbl = new Label() {
-                    Text = property.Id.ToString() + ":",
+                    AutoSize = true,
+                    Text = property.Name + ":",
                 };
                 lbl.Top = top + (txt.Height - lbl.Height) / 2;
                 lbl.Left = ClientRectangle.Left + txt.Margin.Left;
@@ -52,7 +53,17 @@ namespace WinScanProfile {
         }
 
         private void btnOk_Click(object sender, EventArgs e) {
-            Profile.Save();
+            bool anyChanges = false;
+            foreach (Control control in Controls) {
+                if (control.Tag is Property property) {
+                    var enteredValue = control.Text;
+                    if (!(property.Value ?? "").Equals(enteredValue)) {
+                        property.Value = enteredValue;
+                        anyChanges |= true;
+                    }
+                }
+            }
+            if (anyChanges) { Profile.Save(); }
         }
 
     }

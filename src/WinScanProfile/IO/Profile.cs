@@ -52,7 +52,7 @@ namespace WinScanProfile.IO {
                             var attrType = xml.GetAttribute("type");
                             if (int.TryParse(attrId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var propId)
                              && int.TryParse(attrType, NumberStyles.Integer, CultureInfo.InvariantCulture, out var propType)) {
-                                Properties.Add(new Property(propId, propType, xml.ReadString()));
+                                Properties.Add(Property.FromData(propId, propType, xml.ReadString()));
                             }
                             break;
 
