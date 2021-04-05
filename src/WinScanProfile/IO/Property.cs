@@ -22,8 +22,12 @@ namespace WinScanProfile.IO {
         public static Property FromData(int id, int type, string value) {
             return id switch {
                 4103 => new ColorFormatProperty(id, type, value),
+                4104 => new BitDepthProperty(id, type, value),
                 4106 => new FileTypeProperty(id, type, value),
                 6147 => new ResolutionProperty(id, type, value),
+                6148 => new ResolutionProperty(id, type, value),
+                6151 => new ScanWidthProperty(id, type, value),
+                6152 => new ScanHeightProperty(id, type, value),
                 6154 => new BrightnessProperty(id, type, value),
                 6155 => new ContrastProperty(id, type, value),
                 _ => new Property(id, type, value),
