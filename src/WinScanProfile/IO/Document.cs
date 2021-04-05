@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace WinScanProfile.Document {
+namespace WinScanProfile.IO {
     internal class Document {
 
         public Document() {
@@ -23,6 +23,19 @@ namespace WinScanProfile.Document {
         private readonly List<Profile> InternalProfiles = new();
         public IReadOnlyList<Profile> Profiles {
             get { return InternalProfiles.AsReadOnly(); }
+        }
+
+
+        public void SetDefaultProfile(Profile profile) {
+            foreach (var otherProfile in Profiles) {
+                if (profile.Equals(otherProfile)) {
+                    profile.IsDefault = true;
+                    profile.Save();
+                } else if (otherProfile.IsDefault) {
+                    otherProfile.IsDefault = false;
+                    otherProfile.Save();
+                }
+            }
         }
 
     }

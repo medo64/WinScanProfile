@@ -1,6 +1,6 @@
 using System;
 
-namespace WinScanProfile.Document {
+namespace WinScanProfile.IO {
     internal class Property {
         public Property(int id, int type, string value) {
             Id = id;

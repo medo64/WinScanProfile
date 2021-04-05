@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using WinScanProfile.IO;
 
 namespace WinScanProfile {
     internal partial class MainForm : Form {
@@ -23,7 +25,60 @@ namespace WinScanProfile {
         }
 
 
-        private readonly Document.Document Document = new();
+        private void lsvProfiles_AfterLabelEdit(object sender, LabelEditEventArgs e) {
+            if (!string.IsNullOrWhiteSpace(e.Label)) {
+                var item = lsvProfiles.Items[e.Item];
+                if (item.Tag is Profile profile) {
+                    profile.ProfileName = e.Label;
+                    profile.Save();
+                }
+            } else {
+                e.CancelEdit = true;
+            }
+        }
+
+        private void lsvProfiles_ItemActivate(object sender, EventArgs e) {
+            mnuContextEdit_Click(sender, e);
+        }
+
+        private void lsvProfiles_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyData == Keys.F2) {
+                var selectedItem = lsvProfiles.FocusedItem;
+                if (selectedItem != null) {
+                    selectedItem.BeginEdit();
+                }
+            }
+        }
+
+
+        private void mnuContext_Opening(object sender, CancelEventArgs e) {
+            var selectedItem = lsvProfiles.FocusedItem;
+            var hasSelection = (selectedItem != null);
+            mnuContextEdit.Enabled = hasSelection;
+            mnuContextSetDefault.Enabled = hasSelection;
+            if (!mnuContextEdit.Font.Bold) {
+                mnuContextEdit.Font = new Font(mnuContextEdit.Font, FontStyle.Bold);
+            }
+        }
+
+        private void mnuContextEdit_Click(object sender, EventArgs e) {
+            var selectedItem = lsvProfiles.FocusedItem;
+            if (selectedItem.Tag is Profile profile) {
+                using var frm = new ProfileForm(Document, profile);
+                frm.ShowDialog(this);
+            }
+        }
+
+        private void mnuContextSetDefault_Click(object sender, EventArgs e) {
+            var selectedItem = lsvProfiles.FocusedItem;
+            if (selectedItem.Tag is Profile profile) {
+                SetProfileAsDouble(profile);
+                RefreshItems();
+            }
+        }
+
+
+        private readonly Document Document = new();
 
         public void RefreshItems() {
             using var _ = new Medo.Windows.Forms.WaitCursor(this);
@@ -55,42 +110,8 @@ namespace WinScanProfile {
             lsvProfiles.EndUpdate();
         }
 
-        private void lsvProfiles_DoubleClick(object sender, EventArgs e) {
-            var selectedItem = lsvProfiles.FocusedItem;
-            if (selectedItem.Tag is Document.Profile profile) {
-                foreach (var otherProfile in Document.Profiles) {
-                    if (profile.Equals(otherProfile)) {
-                        profile.IsDefault = true;
-                        profile.Save();
-                    } else if (otherProfile.IsDefault) {
-                        otherProfile.IsDefault = false;
-                        otherProfile.Save();
-                    }
-                }
-            }
-
-            RefreshItems();
-        }
-
-        private void lsvProfiles_AfterLabelEdit(object sender, LabelEditEventArgs e) {
-            if (!string.IsNullOrWhiteSpace(e.Label)) {
-                var item = lsvProfiles.Items[e.Item];
-                if (item.Tag is Document.Profile profile) {
-                    profile.ProfileName = e.Label;
-                    profile.Save();
-                }
-            } else {
-                e.CancelEdit = true;
-            }
-        }
-
-        private void lsvProfiles_KeyDown(object sender, KeyEventArgs e) {
-            if (e.KeyData == Keys.F2) {
-                var selectedItem = lsvProfiles.FocusedItem;
-                if (selectedItem != null) {
-                    selectedItem.BeginEdit();
-                }
-            }
+        private void SetProfileAsDouble(Profile profile) {
+            Document.SetDefaultProfile(profile);
         }
 
     }

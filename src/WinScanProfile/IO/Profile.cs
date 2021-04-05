@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-namespace WinScanProfile.Document {
+namespace WinScanProfile.IO {
     [DebuggerDisplay("{ProfileName}")]
     internal class Profile {
 

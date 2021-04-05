@@ -28,10 +28,15 @@ namespace WinScanProfile
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.mnu = new System.Windows.Forms.ToolStrip();
             this.lsvProfiles = new System.Windows.Forms.ListView();
             this.lsvProfiles_colProfile = new System.Windows.Forms.ColumnHeader();
+            this.mnuContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuContextEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuContextSetDefault = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // mnu
@@ -46,6 +51,7 @@ namespace WinScanProfile
             // 
             this.lsvProfiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.lsvProfiles_colProfile});
+            this.lsvProfiles.ContextMenuStrip = this.mnuContext;
             this.lsvProfiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lsvProfiles.FullRowSelect = true;
             this.lsvProfiles.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
@@ -59,13 +65,37 @@ namespace WinScanProfile
             this.lsvProfiles.UseCompatibleStateImageBehavior = false;
             this.lsvProfiles.View = System.Windows.Forms.View.Details;
             this.lsvProfiles.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.lsvProfiles_AfterLabelEdit);
-            this.lsvProfiles.DoubleClick += new System.EventHandler(this.lsvProfiles_DoubleClick);
+            this.lsvProfiles.ItemActivate += new System.EventHandler(this.lsvProfiles_ItemActivate);
             this.lsvProfiles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lsvProfiles_KeyDown);
             // 
             // lsvProfiles_colProfile
             // 
             this.lsvProfiles_colProfile.Text = "Profile";
             this.lsvProfiles_colProfile.Width = 240;
+            // 
+            // mnuContext
+            // 
+            this.mnuContext.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.mnuContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuContextEdit,
+            this.mnuContextSetDefault});
+            this.mnuContext.Name = "mnuContext";
+            this.mnuContext.Size = new System.Drawing.Size(153, 52);
+            this.mnuContext.Opening += new System.ComponentModel.CancelEventHandler(this.mnuContext_Opening);
+            // 
+            // mnuContextEdit
+            // 
+            this.mnuContextEdit.Name = "mnuContextEdit";
+            this.mnuContextEdit.Size = new System.Drawing.Size(152, 24);
+            this.mnuContextEdit.Text = "&Edit...";
+            this.mnuContextEdit.Click += new System.EventHandler(this.mnuContextEdit_Click);
+            // 
+            // mnuContextSetDefault
+            // 
+            this.mnuContextSetDefault.Name = "mnuContextSetDefault";
+            this.mnuContextSetDefault.Size = new System.Drawing.Size(152, 24);
+            this.mnuContextSetDefault.Text = "Set &Default";
+            this.mnuContextSetDefault.Click += new System.EventHandler(this.mnuContextSetDefault_Click);
             // 
             // MainForm
             // 
@@ -81,6 +111,7 @@ namespace WinScanProfile
             this.Load += new System.EventHandler(this.Form_Load);
             this.Shown += new System.EventHandler(this.Form_Shown);
             this.Resize += new System.EventHandler(this.Form_Resize);
+            this.mnuContext.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -91,6 +122,9 @@ namespace WinScanProfile
         private System.Windows.Forms.ToolStrip mnu;
         private System.Windows.Forms.ListView lsvProfiles;
         private System.Windows.Forms.ColumnHeader lsvProfiles_colProfile;
+        private System.Windows.Forms.ContextMenuStrip mnuContext;
+        private System.Windows.Forms.ToolStripMenuItem mnuContextEdit;
+        private System.Windows.Forms.ToolStripMenuItem mnuContextSetDefault;
     }
 }
 
