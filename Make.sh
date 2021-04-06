@@ -130,9 +130,9 @@ function package() {
         echo "${ANSI_YELLOW}Cannot find Signature tool!${ANSI_RESET}" >&2
     fi
     if [[ "$SIGN_TIMESTAMPURL" == "" ]]; then
-        cd bin ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //v "$PACKAGE_ID.exe" || return 1 ; cd ..
+        cd bin ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //fd sha256 //v "$PACKAGE_ID.exe" || return 1 ; cd ..
     else
-        cd bin ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //tr $SIGN_TIMESTAMPURL //td sha256 //v "$PACKAGE_ID.exe" || return 1 ; cd ..
+        cd bin ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //fd sha256 //tr $SIGN_TIMESTAMPURL //td sha256 //v "$PACKAGE_ID.exe" || return 1 ; cd ..
     fi
     INNOSETUP_EXE="/c/Program Files (x86)/Inno Setup 6\iscc.exe"
     if [[ ! -e "$INNOSETUP_EXE" ]]; then
@@ -142,9 +142,9 @@ function package() {
     mkdir -p "$BASE_DIRECTORY/build/dist/package"
     "$INNOSETUP_EXE" //O"build\dist\package" "package/win/WinScanProfile.iss" || return 1
     if [[ "$SIGN_TIMESTAMPURL" == "" ]]; then
-        cd build/dist/package/ ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //v "setup.exe" || return 1 ; cd ../../../
+        cd build/dist/package/ ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //fd sha256 //v "setup.exe" || return 1 ; cd ../../../
     else
-        cd build/dist/package/ ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //tr $SIGN_TIMESTAMPURL //td sha256 //v "setup.exe" || return 1 ; cd ../../../
+        cd build/dist/package/ ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //fd sha256 //tr $SIGN_TIMESTAMPURL //td sha256 //v "setup.exe" || return 1 ; cd ../../../
     fi
     cp "$BASE_DIRECTORY/build/dist/package/setup.exe" "$BASE_DIRECTORY/dist/$PACKAGE_ID-$PACKAGE_VERSION.exe" || return 1
     echo "${ANSI_CYAN}Output at 'dist/$PACKAGE_ID-$PACKAGE_VERSION.exe'${ANSI_RESET}"
