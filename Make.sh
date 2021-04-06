@@ -1,8 +1,12 @@
 #!/bin/bash
 
+PACKAGE_ID="WinScanProfile"
 SOLUTION_FILE="WinScanProfile.sln"
 EXECUTABLE_FILES="WinScanProfile.exe WinScanProfile.pdb"
 DIST_FILES="Make.sh CONTRIBUTING.md ICON.png LICENSE.md README.md lib/ src/"
+SIGN_THUMBPRINT="e9b444fffb1375ece027e40d8637b6da3fdaaf0e"
+SIGN_TIMESTAMPURL="http://timestamp.comodoca.com/rfc3161"
+
 
 if [ -t 1 ]; then
     ANSI_RESET="$(tput sgr0)"
@@ -52,19 +56,25 @@ if [[ ! -e "$TOOL_VISUALSTUDIO" ]]; then
 fi
 
 
+for FILE in `find "$BASE_DIRECTORY/src/" -name "AssemblyInfo.cs"`; do
+    PACKAGE_VERSION=`cat "$FILE" | grep 'AssemblyVersion' | sed 's/.*("//g' | sed 's/").*//g' | xargs`
+    if [[ "$PACKAGE_VERSION" != "" ]]; then break; fi
+done
+
+
 function clean() {
     rm -r "$BASE_DIRECTORY/bin/" 2>/dev/null
     rm -r "$BASE_DIRECTORY/build/" 2>/dev/null
-    find "$BASE_DIRECTORY/src/" -name "bin" -type d -exec rm -rf {} \;
-    find "$BASE_DIRECTORY/src/" -name "obj" -type d -exec rm -rf {} \;
+    find "$BASE_DIRECTORY/src/" -name "bin" -type d -exec rm -rf {} \; 2>/dev/null
+    find "$BASE_DIRECTORY/src/" -name "obj" -type d -exec rm -rf {} \; 2>/dev/null
     return 0
 }
 
 function distclean() {
     rm -r "$BASE_DIRECTORY/dist/" 2>/dev/null
     rm -r "$BASE_DIRECTORY/target/" 2>/dev/null
-    find "$BASE_DIRECTORY/src/" -name ".vs" -type d -exec rm -rf {} \;
-    find "$BASE_DIRECTORY/src/" -name "*.csproj.user" -delete
+    find "$BASE_DIRECTORY/src/" -name ".vs" -type d -exec rm -rf {} \; 2>/dev/null
+    find "$BASE_DIRECTORY/src/" -name "*.csproj.user" -delete 2>/dev/null
     return 0
 }
 
@@ -114,10 +124,32 @@ function release() {
     echo "${ANSI_CYAN}Output in 'bin/'${ANSI_RESET}"
 }
 
-
-PACKAGE_ID=WinScanProfile
-PACKAGE_VERSION=`cat "$BASE_DIRECTORY/src/WinScanProfile/WinScanProfile.csproj" | grep "<Version>" | sed 's^</\?Version>^^g' | xargs`
-
+function package() {
+    SIGN_EXE="/c/Program Files (x86)/Microsoft SDKs/ClickOnce/SignTool/signtool.exe"
+    if [[ ! -e "$SIGN_EXE" ]]; then
+        echo "${ANSI_YELLOW}Cannot find Signature tool!${ANSI_RESET}" >&2
+    fi
+    if [[ "$SIGN_TIMESTAMPURL" == "" ]]; then
+        cd bin ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //v "$PACKAGE_ID.exe" || return 1 ; cd ..
+    else
+        cd bin ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //tr $SIGN_TIMESTAMPURL //td sha256 //v "$PACKAGE_ID.exe" || return 1 ; cd ..
+    fi
+    INNOSETUP_EXE="/c/Program Files (x86)/Inno Setup 6\iscc.exe"
+    if [[ ! -e "$INNOSETUP_EXE" ]]; then
+        echo "${ANSI_RED}Cannot find InnoSetup!${ANSI_RESET}" >&2
+        exit 1
+    fi
+    mkdir -p "$BASE_DIRECTORY/build/dist/package"
+    "$INNOSETUP_EXE" //O"build\dist\package" "package/win/WinScanProfile.iss" || return 1
+    if [[ "$SIGN_TIMESTAMPURL" == "" ]]; then
+        cd build/dist/package/ ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //v "setup.exe" || return 1 ; cd ../../../
+    else
+        cd build/dist/package/ ; "$SIGN_EXE" sign //s "My" //sha1 $SIGN_THUMBPRINT //tr $SIGN_TIMESTAMPURL //td sha256 //v "setup.exe" || return 1 ; cd ../../../
+    fi
+    cp "$BASE_DIRECTORY/build/dist/package/setup.exe" "$BASE_DIRECTORY/dist/$PACKAGE_ID-$PACKAGE_VERSION.exe" || return 1
+    echo "${ANSI_CYAN}Output at 'dist/$PACKAGE_ID-$PACKAGE_VERSION.exe'${ANSI_RESET}"
+    rm -r "$BASE_DIRECTORY/build/dist/package/" 2>/dev/null
+}
 
 
 while [ $# -gt 0 ]; do
@@ -125,10 +157,11 @@ while [ $# -gt 0 ]; do
     case "$OPERATION" in
         all)        clean || break ;;
         clean)      clean || break ;;
-        distclean)  clean || distclean || break ;;
-        dist)       dist || break ;;
-        debug)      debug || break ;;
-        release)    release || break ;;
+        distclean)  clean && distclean || break ;;
+        dist)       clean && distclean && dist || break ;;
+        debug)      clean && debug || break ;;
+        release)    clean && release || break ;;
+        package)    clean && release && package || break ;;
 
         *)  echo "${ANSI_RED}Unknown operation '$OPERATION'!${ANSI_RESET}" >&2 ; exit 1 ;;
     esac
