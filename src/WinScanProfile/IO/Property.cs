@@ -12,12 +12,12 @@ namespace WinScanProfile.IO {
             Values = new List<KeyValuePair<string, string>>().AsReadOnly();
         }
 
-        public int Id { get; init; }
-        public int Type { get; init; }
+        public int Id { get; }
+        public int Type { get; }
         public string? Value { get; set; }
 
-        public string Name { get; init; }
-        public IReadOnlyList<KeyValuePair<string, string>> Values { get; init; }
+        public string Name { get; protected set; }
+        public IReadOnlyList<KeyValuePair<string, string>> Values { get; protected set; }
 
         public static Property FromData(int id, int type, string value) {
             return id switch {

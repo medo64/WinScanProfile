@@ -94,12 +94,12 @@ namespace WinScanProfile.IO {
         }
 
 
-        public string FileName { get; init; }
-        public string? ProfileGuid { get; init; }
-        public string? DeviceId { get; init; }
-        public string? DeviceFriendlyName { get; init; }
+        public string FileName { get; }
+        public string? ProfileGuid { get; }
+        public string? DeviceId { get; }
+        public string? DeviceFriendlyName { get; }
         public string? ProfileName { get; set; }
-        public string? WiaItem { get; init; }
+        public string? WiaItem { get; }
         public bool IsDefault { get; set; }
 
         public List<Property> Properties { get; } = new();

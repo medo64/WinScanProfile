@@ -18,7 +18,7 @@ namespace WinScanProfile.IO {
             ScanProfilesDirectory = scanDir;
         }
 
-        public string ScanProfilesDirectory { get; init; }
+        public string ScanProfilesDirectory { get; }
 
         private readonly List<Profile> InternalProfiles = new();
         public IReadOnlyList<Profile> Profiles {
